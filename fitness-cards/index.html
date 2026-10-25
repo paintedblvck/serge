@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Cards for Fitness</title>
+	<meta name="description" content="26 small habits to build a strong body and a consistent routine.">
+	<link rel="stylesheet" href="style.css">
+</head>
+<body>
+	<header class="top">
+		<div class="brand">
+			<span class="brand-sub">Cards for</span>
+			<h1>Fitness:</h1>
+			<p>26 small steps to build a strong body and a routine you keep.</p>
+		</div>
+		<div class="actions">
+			<button id="today" class="btn btn-dark">Today's card</button>
+			<button id="draw" class="btn">Draw a card</button>
+			<button id="shuffle" class="btn">Shuffle</button>
+		</div>
+	</header>
+
+	<section class="bar">
+		<div id="filters" class="filters" role="group" aria-label="Filter by category"></div>
+		<div class="progress" aria-live="polite">
+			<span id="progress-text"></span>
+			<div class="meter"><div id="meter-fill"></div></div>
+		</div>
+	</section>
+
+	<main id="grid" class="grid" aria-label="Fitness cards"></main>
+
+	<div id="modal" class="modal" hidden>
+		<div class="backdrop" data-close></div>
+		<div class="stage" role="dialog" aria-modal="true" aria-label="Card">
+			<button class="nav prev" id="prev" aria-label="Previous card">&#8249;</button>
+			<div class="flip" id="flip">
+				<div class="flip-inner" id="flip-inner">
+					<div class="face front" id="face-front"></div>
+					<div class="face back" id="face-back"></div>
+				</div>
+			</div>
+			<button class="nav next" id="next" aria-label="Next card">&#8250;</button>
+			<div class="modal-actions">
+				<button id="flip-btn" class="btn">Flip</button>
+				<button id="done-btn" class="btn btn-dark">Mark done</button>
+				<button id="close-btn" class="btn" data-close>Close</button>
+			</div>
+		</div>
+	</div>
+
+	<script src="cards.js"></script>
+	<script src="app.js"></script>
+</body>
+</html>
