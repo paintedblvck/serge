@@ -29,7 +29,7 @@ All routine updates happen in `content.js`:
 - **New release:** add an entry at the top of the `music` list and drop the cover art in `img/`.
 - **New mix:** paste the SoundCloud or Mixcloud embed `src` URL into `featuredMix.embedUrl`.
 - **Showreel:** paste a YouTube or Vimeo embed URL into `showreel.embedUrl`. Video plays only when a visitor clicks; nothing autoplays.
-- **Testimonials and highlights:** the Testimonials section and the career-highlights list stay hidden until you add entries. Add only approved quotes.
+- **Testimonials and highlights:** add entries to `testimonials` and `highlights`. Until you do, they show placeholders (or are hidden when `showPlaceholders` is false). Add only approved quotes.
 
 ## Photos
 
