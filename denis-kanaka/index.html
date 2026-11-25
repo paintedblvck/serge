@@ -1,19 +1,20 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Denis Kanaka — DJ in Albany, NY | Events, Lounges & Nightlife</title>
   <meta name="description" content="Denis Kanaka is a Rwandan DJ, recording artist and creative strategist based in Albany, New York. Book him for private events, lounges, nightlife and brand experiences across the Capital Region.">
-  <meta name="theme-color" content="#F1E8D6">
-  <link rel="canonical" href="https://deniskanaka.com/">
+  <meta name="theme-color" content="#171713">
+  <!-- DOMAIN GOES HERE: replace https://DOMAIN-GOES-HERE.com in the 3 tags below and in the JSON-LD -->
+  <link rel="canonical" href="https://DOMAIN-GOES-HERE.com/">
 
   <!-- Social previews (replace og-image.jpg with a 1200×630 performance photo) -->
   <meta property="og:type" content="website">
   <meta property="og:title" content="Denis Kanaka — DJ, Recording Artist & Creative Strategist">
   <meta property="og:description" content="Rwandan DJ based in Albany, NY. Booking private events, lounges, nightlife and brand experiences across the Capital Region.">
-  <meta property="og:image" content="https://deniskanaka.com/img/og-image.jpg">
-  <meta property="og:url" content="https://deniskanaka.com/">
+  <meta property="og:image" content="https://DOMAIN-GOES-HERE.com/img/og-image.jpg">
+  <meta property="og:url" content="https://DOMAIN-GOES-HERE.com/">
   <meta name="twitter:card" content="summary_large_image">
 
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23171713'/%3E%3Ctext x='50%25' y='56%25' text-anchor='middle' dominant-baseline='middle' font-family='Georgia,serif' font-size='40' font-style='italic' fill='%23F1E8D6'%3Ek%3C/text%3E%3C/svg%3E">
@@ -22,6 +23,10 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
+  <script>
+    /* Apply saved light/dark choice before first paint (default: dark). */
+    (function () { try { var t = localStorage.getItem("dk-theme"); if (t === "light" || t === "dark") document.documentElement.setAttribute("data-theme", t); } catch (e) {} })();
+  </script>
 
   <script type="application/ld+json">
   {
@@ -29,7 +34,7 @@
     "@type": "Person",
     "name": "Denis Kanaka",
     "jobTitle": ["DJ", "Recording Artist", "Creative Strategist"],
-    "url": "https://deniskanaka.com/",
+    "url": "https://DOMAIN-GOES-HERE.com/",
     "homeLocation": { "@type": "Place", "name": "Albany, New York" },
     "areaServed": ["Albany, NY", "Capital Region, NY", "Troy, NY", "Schenectady, NY", "Saratoga Springs, NY"],
     "sameAs": ["https://www.instagram.com/denis_kanaka/"]
@@ -53,6 +58,10 @@
         <a href="#about">About</a>
         <a href="#book" class="nav-book" data-track="book_click" data-track-label="nav">Bookings</a>
       </nav>
+      <button class="theme-btn" type="button" aria-label="Switch to light mode" title="Switch light / dark">
+        <svg class="i-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.2" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5.3 5.3l1.6 1.6M17.1 17.1l1.6 1.6M5.3 18.7l1.6-1.6M17.1 6.9l1.6-1.6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+        <svg class="i-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+      </button>
       <a href="#book" class="btn btn-ghost header-cta" data-track="book_click" data-track-label="header">Book Denis</a>
       <button class="menu-btn" aria-expanded="false" aria-controls="nav" aria-label="Open menu">
         <span></span><span></span>
@@ -63,7 +72,7 @@
   <main id="main">
 
     <!-- ================= HERO ================= -->
-    <section class="hero section-paper">
+    <section class="hero section-ink">
       <div class="wrap hero-grid">
         <div class="hero-copy">
           <div class="hero-mark" aria-hidden="true">
@@ -81,7 +90,7 @@
         <div class="hero-media">
           <div class="frame frame-hero">
             <div class="ph" data-img="img/hero.jpg" role="img" aria-label="Denis Kanaka performing a DJ set in Albany, New York">
-              <span class="ph-label">performance photo · img/hero.jpg</span>
+              <span class="ph-label">Performance photo goes here · img/hero.jpg</span>
             </div>
             <button class="play-badge" type="button" data-showreel aria-label="Play showreel">
               <svg class="ring" viewBox="0 0 100 100" aria-hidden="true">
@@ -104,7 +113,7 @@
     </section>
 
     <!-- ================= DJ & EVENTS ================= -->
-    <section class="section section-paper" id="dj">
+    <section class="section section-ink" id="dj">
       <div class="wrap">
         <header class="section-head center">
           <span class="rule"></span>
@@ -152,7 +161,7 @@
           <div class="mix-player" id="mixPlayer">
             <div class="mix-empty">
               <span class="bars" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span>
-              <span>Mix player appears here</span>
+              <span>Mix embed link goes here</span>
             </div>
           </div>
         </div>
@@ -176,7 +185,7 @@
     </section>
 
     <!-- ================= CREATIVE WORK ================= -->
-    <section class="section section-paper" id="work">
+    <section class="section section-paper alt" id="work">
       <div class="wrap">
         <header class="section-head split">
           <div>
@@ -191,11 +200,11 @@
     </section>
 
     <!-- ================= ABOUT ================= -->
-    <section class="section section-paper" id="about">
+    <section class="section section-ink" id="about">
       <div class="wrap about-grid">
         <div class="frame frame-portrait">
           <div class="ph" data-img="img/portrait.jpg" role="img" aria-label="Portrait of Denis Kanaka, DJ and creative strategist based in Albany, NY">
-            <span class="ph-label">portrait · img/portrait.jpg</span>
+            <span class="ph-label">Portrait photo goes here · img/portrait.jpg</span>
           </div>
         </div>
         <div class="about-copy">
@@ -205,7 +214,7 @@
           <p>Denis Kanaka is a Rwandan DJ, recording artist and creative strategist based in Albany, New York.</p>
           <p>His work connects music, culture and storytelling, whether he is behind the decks at a lounge, in the studio on a new record, or shaping how a brand shows up in a room.</p>
           <p>The thread through all of it is connection: bringing people together around sound and building nights they remember.</p>
-          <ul class="highlights" id="highlights" hidden></ul>
+          <ul class="highlights" id="highlights"></ul>
           <div class="actions">
             <a href="#book" class="btn btn-ghost" data-track="book_click" data-track-label="about">Work with Denis</a>
           </div>
@@ -214,7 +223,7 @@
     </section>
 
     <!-- ================= TESTIMONIALS (hidden until approved quotes exist) ================= -->
-    <section class="section section-paper tight" id="testimonials" hidden>
+    <section class="section section-ink tight" id="testimonials">
       <div class="wrap">
         <header class="section-head">
           <span class="rule"></span>
@@ -314,7 +323,7 @@
   </main>
 
   <!-- ================= FOOTER ================= -->
-  <footer class="site-footer">
+  <footer class="site-footer section-ink">
     <div class="wrap footer-inner">
       <p class="footer-mark">denis kanaka</p>
       <p class="mono">Rwanda / Albany / Everywhere</p>

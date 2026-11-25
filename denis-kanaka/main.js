@@ -3,6 +3,7 @@
   "use strict";
   var S = window.SITE || {};
   var C = S.contact || {};
+  var TODO = S.showPlaceholders !== false;
   var $ = function (sel, root) { return (root || document).querySelector(sel); };
   var $$ = function (sel, root) { return Array.prototype.slice.call((root || document).querySelectorAll(sel)); };
   var esc = function (s) {
@@ -10,6 +11,8 @@
       return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
     });
   };
+  /* Visible "… goes here" marker (or nothing when placeholders are off). */
+  function todo(text, cls) { return TODO ? '<span class="todo' + (cls ? " " + cls : "") + '">' + esc(text) + "</span>" : ""; }
 
   /* ---------- Analytics hook ----------------------------------------
      Works with Plausible, GA4 (gtag) or Google Tag Manager if present. */
@@ -23,6 +26,21 @@
   document.addEventListener("click", function (e) {
     var t = e.target.closest("[data-track]");
     if (t) track(t.getAttribute("data-track"), t.getAttribute("data-track-label"));
+  });
+
+  /* ---------- Light / dark theme ---------- */
+  var root = document.documentElement, themeBtn = $(".theme-btn"), metaTheme = $('meta[name="theme-color"]');
+  function applyTheme(t, save) {
+    root.setAttribute("data-theme", t);
+    themeBtn.setAttribute("aria-label", t === "dark" ? "Switch to light mode" : "Switch to dark mode");
+    if (metaTheme) metaTheme.setAttribute("content", t === "dark" ? "#171713" : "#F1E8D6");
+    if (save) { try { localStorage.setItem("dk-theme", t); } catch (e) {} }
+  }
+  applyTheme(root.getAttribute("data-theme") === "light" ? "light" : "dark", false);
+  themeBtn.addEventListener("click", function () {
+    var next = root.getAttribute("data-theme") === "dark" ? "light" : "dark";
+    applyTheme(next, true);
+    track("theme_toggle", next);
   });
 
   /* ---------- Header + mobile nav ---------- */
@@ -46,6 +64,7 @@
     img.onload = function () { el.style.backgroundImage = "url('" + src + "')"; el.classList.add("has-img"); };
     img.src = src;
   });
+  if (!TODO) $$(".ph-label").forEach(function (el) { el.hidden = true; });
 
   /* ---------- Simple text bindings ---------- */
   $$("[data-bind]").forEach(function (el) {
@@ -55,27 +74,34 @@
 
   /* ---------- Featured mix ---------- */
   var mix = S.featuredMix || {};
+  var player = $("#mixPlayer");
   if (mix.embedUrl) {
-    var player = $("#mixPlayer");
     player.innerHTML = '<iframe title="' + esc(mix.title || "Featured mix") + '" loading="lazy" allow="encrypted-media" src="' + esc(mix.embedUrl) + '"></iframe>';
-    if (mix.caption && /Add a SoundCloud/.test(mix.caption)) $("[data-bind='featuredMix.caption']").textContent = "";
+  } else if (!TODO) {
+    $("#mix").hidden = true;
   }
 
   /* ---------- Music ---------- */
   var LINK_NAMES = { spotify: "Spotify", apple: "Apple Music", youtube: "YouTube", soundcloud: "SoundCloud", bandcamp: "Bandcamp", tidal: "Tidal" };
   var rel = $("#releases");
   (S.music || []).forEach(function (m) {
-    var links = Object.keys(m.links || {}).filter(function (k) { return m.links[k]; }).map(function (k) {
-      return '<a class="chip" href="' + esc(m.links[k]) + '" target="_blank" rel="noopener" data-track="music_click" data-track-label="' + esc(m.title + " / " + k) + '">' + esc(LINK_NAMES[k] || k) + "</a>";
+    if (!TODO && !m.title) return;
+    var keys = Object.keys(m.links || {});
+    var links = keys.map(function (k) {
+      var name = LINK_NAMES[k] || k;
+      return m.links[k]
+        ? '<a class="chip" href="' + esc(m.links[k]) + '" target="_blank" rel="noopener" data-track="music_click" data-track-label="' + esc((m.title || "release") + " / " + k) + '">' + esc(name) + "</a>"
+        : todo(name + " link goes here", "chip");
     }).join("");
-    if (!links) links = '<span class="chip soon">Links coming soon</span>';
+    var label = (m.type || "Release").toLowerCase();
+    var title = m.title ? esc(m.title) : (TODO ? '<span class="todo">' + esc(m.type || "Release") + " title goes here</span>" : "");
     var art = document.createElement("article");
     art.className = "release reveal";
     art.innerHTML =
       '<div class="cover' + (m.cover ? " has-img" : "") + '"' +
         (m.cover ? ' style="background-image:url(\'' + esc(m.cover) + '\')" role="img" aria-label="' + esc(m.title) + ' cover art"' : ' aria-hidden="true"') +
-        '><span class="cover-mark">kanaka</span></div>' +
-      '<div class="release-meta"><h3 class="release-title">' + esc(m.title) + '</h3><span class="release-type">' + esc(m.type) + (m.year ? " · " + esc(m.year) : "") + "</span></div>" +
+        '><span class="cover-mark">kanaka</span>' + (!m.cover && TODO ? '<span class="cover-todo">Cover art goes here</span>' : "") + "</div>" +
+      '<div class="release-meta"><h3 class="release-title">' + title + '</h3><span class="release-type">' + esc(m.type) + (m.year ? " · " + esc(m.year) : (TODO ? " · year" : "")) + "</span></div>" +
       '<div class="release-links">' + links + "</div>";
     rel.appendChild(art);
   });
@@ -84,11 +110,13 @@
   var socials = [
     ["Instagram", C.instagram ? "https://www.instagram.com/" + C.instagram + "/" : ""],
     ["Spotify", C.spotify], ["Apple Music", C.appleMusic], ["SoundCloud", C.soundcloud], ["YouTube", C.youtube]
-  ].filter(function (s) { return s[1]; });
+  ];
   $("#streamLinks").innerHTML = socials.filter(function (s) { return s[0] !== "Instagram"; }).map(function (s) {
-    return '<a class="chip" href="' + esc(s[1]) + '" target="_blank" rel="noopener" data-track="music_click" data-track-label="artist-' + esc(s[0]) + '">' + esc(s[0]) + " ↗</a>";
+    return s[1]
+      ? '<a class="chip" href="' + esc(s[1]) + '" target="_blank" rel="noopener" data-track="music_click" data-track-label="artist-' + esc(s[0]) + '">' + esc(s[0]) + " ↗</a>"
+      : todo(s[0] + " profile link goes here", "chip");
   }).join("");
-  $("#footerLinks").innerHTML = socials.map(function (s) {
+  $("#footerLinks").innerHTML = socials.filter(function (s) { return s[1]; }).map(function (s) {
     return '<a href="' + esc(s[1]) + '" target="_blank" rel="noopener" data-track="social_click" data-track-label="footer-' + esc(s[0]) + '">' + esc(s[0]) + "</a>";
   }).join("") + '<a href="#book" data-track="book_click" data-track-label="footer">Bookings</a>';
 
@@ -98,26 +126,42 @@
     var attrs = p.url ? ' href="' + esc(p.url) + '" target="_blank" rel="noopener" data-track="project_click" data-track-label="' + esc(p.title) + '"' : "";
     return "<" + tag + ' class="project reveal"' + attrs + '>' +
       '<p class="label">' + esc(p.tag) + "</p><h3>" + esc(p.title) + "</h3><p>" + esc(p.text) + "</p>" +
-      (p.url ? '<span class="go">Visit ↗</span>' : "") + "</" + tag + ">";
+      (p.url ? '<span class="go">Visit ↗</span>' : todo(p.title + " link goes here")) + "</" + tag + ">";
   }).join("");
 
-  /* ---------- Highlights & testimonials (hidden when empty) ---------- */
-  if ((S.highlights || []).length) {
-    var hl = $("#highlights");
-    hl.innerHTML = S.highlights.map(function (h) { return "<li>" + esc(h) + "</li>"; }).join("");
-    hl.hidden = false;
+  /* ---------- Highlights ---------- */
+  var hl = $("#highlights"), H = S.highlights || [];
+  if (H.length) {
+    hl.innerHTML = H.map(function (h) { return "<li>" + esc(h) + "</li>"; }).join("");
+  } else if (TODO) {
+    hl.innerHTML = [1, 2, 3].map(function (n) { return '<li class="todo-li">' + todo("Career highlight " + n + " goes here") + "</li>"; }).join("");
+  } else {
+    hl.hidden = true;
   }
-  if ((S.testimonials || []).length) {
-    $("#quotes").innerHTML = S.testimonials.map(function (t) {
+
+  /* ---------- Testimonials ---------- */
+  var T = S.testimonials || [];
+  if (T.length) {
+    $("#quotes").innerHTML = T.map(function (t) {
       return '<figure class="quote reveal"><blockquote>“' + esc(t.quote) + '”</blockquote><figcaption><strong>' + esc(t.name) + "</strong>" + (t.role ? " · " + esc(t.role) : "") + "</figcaption></figure>";
     }).join("");
-    $("#testimonials").hidden = false;
+  } else if (TODO) {
+    $("#quotes").innerHTML = [1, 2].map(function () {
+      return '<figure class="quote is-todo reveal"><blockquote>' + todo("Approved testimonial goes here") + "</blockquote><figcaption>" + todo("Client name & role go here") + "</figcaption></figure>";
+    }).join("");
+  } else {
+    $("#testimonials").hidden = true;
   }
 
   /* ---------- Direct contact details ---------- */
   var direct = $("#direct");
-  if (C.email) direct.insertAdjacentHTML("afterbegin", '<div><dt>Email</dt><dd><a href="mailto:' + esc(C.email) + '" data-track="email_click">' + esc(C.email) + "</a></dd></div>");
-  if (C.phone) direct.insertAdjacentHTML("beforeend", '<div><dt>Phone</dt><dd><a href="tel:' + esc(C.phone.replace(/[^\d+]/g, "")) + '" data-track="phone_click">' + esc(C.phone) + "</a></dd></div>");
+  direct.insertAdjacentHTML("afterbegin", '<div><dt>Email</dt><dd>' + (C.email
+    ? '<a href="mailto:' + esc(C.email) + '" data-track="email_click">' + esc(C.email) + "</a>"
+    : todo("Email goes here")) + "</dd></div>");
+  if (C.phone || TODO) direct.insertAdjacentHTML("beforeend", '<div><dt>Phone</dt><dd>' + (C.phone
+    ? '<a href="tel:' + esc(C.phone.replace(/[^\d+]/g, "")) + '" data-track="phone_click">' + esc(C.phone) + "</a>"
+    : todo("Phone number goes here")) + "</dd></div>");
+  if (!C.email && !TODO) direct.firstElementChild.remove();
 
   $("#year").textContent = new Date().getFullYear();
 
@@ -129,7 +173,9 @@
       var url = S.showreel && S.showreel.embedUrl;
       reelBody.innerHTML = url
         ? '<iframe title="Denis Kanaka showreel" allow="autoplay; encrypted-media; fullscreen" allowfullscreen src="' + esc(url) + (url.indexOf("?") > -1 ? "&" : "?") + 'autoplay=1"></iframe>'
-        : "<p>Showreel coming soon.<br>In the meantime, follow @" + esc(C.instagram || "denis_kanaka") + " for recent sets.</p>";
+        : TODO
+          ? '<p><span class="todo">Showreel video link goes here</span><br><br>Add a YouTube / Vimeo embed URL to showreel.embedUrl in content.js.</p>'
+          : "<p>Showreel coming soon.<br>In the meantime, follow @" + esc(C.instagram || "denis_kanaka") + " for recent sets.</p>";
       if (modal.showModal) modal.showModal(); else modal.setAttribute("open", "");
     });
   });
@@ -147,7 +193,8 @@
   /* ---------- Booking form ---------- */
   var form = $("#bookingForm"), status = $("#formStatus"), done = $("#formDone"), hint = $("#contactHint");
   var dateInput = $("#f-date");
-  dateInput.min = new Date().toISOString().slice(0, 10);
+  var d = new Date(); d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
+  dateInput.min = d.toISOString().slice(0, 10);
 
   function fieldOf(el) { return el.closest(".field"); }
   function validate() {
@@ -178,6 +225,9 @@
     done.hidden = true; form.hidden = false; $("#f-name").focus();
   });
 
+  /* Where inquiries go: explicit endpoint first, else FormSubmit → contact.email */
+  var endpoint = S.formEndpoint || (C.email ? "https://formsubmit.co/ajax/" + encodeURIComponent(C.email) : "");
+
   form.addEventListener("submit", function (e) {
     e.preventDefault();
     form.dataset.tried = "1";
@@ -188,33 +238,32 @@
     }
     if (form._gotcha.value) return; // bot
     status.textContent = "";
+
+    if (!endpoint) {
+      status.innerHTML = '<span class="todo">Booking email goes here</span> This form isn’t connected yet, so nothing was sent. Set contact.email (or formEndpoint) in content.js.';
+      return;
+    }
+
     var data = new FormData(form);
     data.delete("_gotcha");
+    data.append("_subject", "Booking inquiry: " + data.get("event_type") + " on " + data.get("date"));
+    data.append("_template", "table");
+    data.append("_captcha", "false");
+    if (data.get("email")) data.append("_replyto", data.get("email"));
     track("booking_submit", data.get("event_type"));
 
-    if (S.formEndpoint) {
-      var btn = $("button[type=submit]", form);
-      btn.disabled = true; btn.textContent = "Sending…";
-      fetch(S.formEndpoint, { method: "POST", body: data, headers: { Accept: "application/json" } })
-        .then(function (r) { if (!r.ok) throw new Error(r.status); showDone(); })
-        .catch(function () {
-          status.textContent = "Something went wrong sending your inquiry." + (C.email ? " Please email " + C.email + " directly." : " Please try again or message @" + (C.instagram || "denis_kanaka") + " on Instagram.");
-        })
-        .finally(function () { btn.disabled = false; btn.textContent = "Send inquiry"; });
-      return;
-    }
-
-    if (C.email) {
-      var body = [];
-      data.forEach(function (v, k) { if (v) body.push(k.replace(/_/g, " ") + ": " + v); });
-      window.location.href = "mailto:" + C.email + "?subject=" + encodeURIComponent("Booking inquiry: " + data.get("event_type") + " on " + data.get("date")) + "&body=" + encodeURIComponent(body.join("\n"));
-      showDone("Your email app should have opened with the details filled in. Hit send and Denis will be in touch.");
-      return;
-    }
-
-    // Preview mode: nothing configured yet.
-    console.warn("[denis kanaka] No formEndpoint or contact.email set in content.js. Inquiry NOT sent.", Object.fromEntries(data));
-    showDone("Preview mode: this form isn’t connected yet, so nothing was sent. Please reach Denis on Instagram @" + (C.instagram || "denis_kanaka") + ".");
+    var btn = $("button[type=submit]", form);
+    btn.disabled = true; btn.textContent = "Sending…";
+    fetch(endpoint, { method: "POST", body: data, headers: { Accept: "application/json" } })
+      .then(function (r) { if (!r.ok) throw new Error(r.status); return r.json().catch(function () { return {}; }); })
+      .then(function (j) {
+        if (j && (j.success === false || j.success === "false")) throw new Error(j.message || "rejected");
+        showDone();
+      })
+      .catch(function () {
+        status.textContent = "Something went wrong sending your inquiry." + (C.email ? " Please email " + C.email + " directly." : " Please try again or message @" + (C.instagram || "denis_kanaka") + " on Instagram.");
+      })
+      .finally(function () { btn.disabled = false; btn.textContent = "Send inquiry"; });
   });
 
   /* ---------- Reveal on scroll ---------- */

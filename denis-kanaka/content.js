@@ -5,68 +5,71 @@
    (new release, new mix, new project, new testimonial, contact details).
    Save, re-upload / push, done. See README.md for the full workflow.
 
-   Leave a value as "" to hide that link or block.
+   Anything left as "" shows a dashed "… goes here" marker on the page,
+   so you can see at a glance what is still missing.
+   Before launch, set showPlaceholders to false: empty items are then
+   hidden instead of marked.
    ===================================================================== */
 
 window.SITE = {
 
+  showPlaceholders: true,
+
   /* ---------- Contact & routing ------------------------------------- */
   contact: {
-    email: "",                 // e.g. "bookings@deniskanaka.com"  (TBC per brief)
-    phone: "",                 // e.g. "+1 518 000 0000"           (TBC per brief)
+    email: "",                 // EMAIL GOES HERE   e.g. "bookings@yourdomain.com"
+    phone: "",                 // PHONE GOES HERE   e.g. "+1 518 000 0000"
     instagram: "denis_kanaka", // handle only, no @
-    youtube: "",               // full URL
-    spotify: "",               // full artist URL
-    appleMusic: "",            // full artist URL
-    soundcloud: ""             // full URL
+    youtube: "",               // YOUTUBE CHANNEL LINK GOES HERE
+    spotify: "",               // SPOTIFY ARTIST LINK GOES HERE
+    appleMusic: "",            // APPLE MUSIC ARTIST LINK GOES HERE
+    soundcloud: ""             // SOUNDCLOUD LINK GOES HERE
   },
 
-  /* Booking form delivery.
-     Paste a Formspree / Basin / Getform endpoint here, e.g.
-     "https://formspree.io/f/abcdwxyz". Submissions are then emailed to Denis.
-     If empty, the form falls back to opening the visitor's email app
-     pre-filled to contact.email. If BOTH are empty the form runs in
-     preview mode and tells the visitor nothing was sent. */
-  formEndpoint: "",
+  /* Booking form delivery — the form works as soon as ONE of these is set:
+     1. formEndpoint: a Formspree / Basin / Getform URL, e.g.
+        "https://formspree.io/f/abcdwxyz"  (recommended: spam filtering + dashboard)
+     2. contact.email above: inquiries are sent through FormSubmit.co to
+        that address. The very first inquiry triggers a one-time
+        "activate this form" email that Denis must click. */
+  formEndpoint: "",            // FORM ENDPOINT GOES HERE (optional)
 
   /* ---------- Showreel (hero "Play showreel" button) ---------------- */
   showreel: {
-    // YouTube or Vimeo embed URL, e.g. "https://www.youtube.com/embed/VIDEO_ID"
-    embedUrl: ""
+    embedUrl: ""               // SHOWREEL LINK GOES HERE  e.g. "https://www.youtube.com/embed/VIDEO_ID"
   },
 
   /* ---------- Featured mix (DJ & Events section) -------------------- */
   featuredMix: {
     title: "Featured mix",
-    caption: "Add a SoundCloud / Mixcloud embed URL in content.js to show the player here.",
-    // SoundCloud: Share → Embed → copy the src="..." value
-    // Mixcloud:  Share → Embed → copy the src="..." value
-    embedUrl: "",
+    caption: "Press play for a taste of a full set.",
+    embedUrl: "",              // MIX EMBED LINK GOES HERE (SoundCloud / Mixcloud → Share → Embed → src="…")
     link: ""
   },
 
   /* ---------- Music: newest first ----------------------------------- */
   /* type: "Single" | "EP" | "Freestyle" | "Music video" | "Mix"
-     cover: path to a square image in /img, e.g. "img/release-01.jpg"  */
+     cover: path to a square image in /img, e.g. "img/release-01.jpg"
+     links: any of spotify, apple, youtube, soundcloud, bandcamp, tidal */
   music: [
     {
-      title: "Release title",
+      title: "",               // RELEASE TITLE GOES HERE
       type: "Single",
-      year: "2026",
+      year: "",
       cover: "",
-      links: { spotify: "", apple: "", youtube: "", soundcloud: "" }
+      links: { spotify: "", apple: "", youtube: "" }
     },
     {
-      title: "Freestyle title",
+      title: "",               // FREESTYLE TITLE GOES HERE
       type: "Freestyle",
-      year: "2026",
+      year: "",
       cover: "",
       links: { youtube: "" }
     },
     {
-      title: "Video title",
+      title: "",               // MUSIC VIDEO TITLE GOES HERE
       type: "Music video",
-      year: "2025",
+      year: "",
       cover: "",
       links: { youtube: "" }
     }
@@ -78,30 +81,29 @@ window.SITE = {
       title: "Jisho Visuals",
       tag: "Photo / Video",
       text: "Photography and film — documenting performance, people and culture.",
-      url: ""
+      url: ""                  // JISHO VISUALS LINK GOES HERE
     },
     {
       title: "Gorilla Peach",
       tag: "Studio",
       text: "Studio work — recording, production and creative sessions.",
-      url: ""
+      url: ""                  // GORILLA PEACH LINK GOES HERE
     },
     {
       title: "Strategy & storytelling",
       tag: "Selected projects",
       text: "Creative strategy, brand storytelling and cultural programming. Case studies coming soon.",
-      url: ""
+      url: ""                  // CASE STUDY LINK GOES HERE
     }
   ],
 
   /* ---------- About: career highlights ------------------------------ */
-  /* Short, factual lines. Leave the list empty to hide the block. */
   highlights: [
     // "Resident DJ, Venue Name — 2024–present",
   ],
 
   /* ---------- Testimonials ------------------------------------------ */
-  /* Only add APPROVED quotes. Section stays hidden while this is empty. */
+  /* Only add APPROVED quotes. */
   testimonials: [
     // { quote: "…", name: "Name", role: "Event planner, Albany" },
   ]

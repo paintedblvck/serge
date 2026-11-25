@@ -14,6 +14,14 @@ There is no build step and no dependencies. Upload the folder to any static host
 | `main.js` | Behaviour: form, nav, showreel, analytics events |
 | `img/` | Photos go here |
 
+## Light / dark mode
+
+Dark is the default design. The sun/moon button in the header switches to the light version, and the visitor's choice is remembered. Both themes use only the brief's palette.
+
+## Placeholders
+
+Any missing data shows on the page as a dashed **"… goes here"** marker: email, phone, links, cover art, photos, mix, showreel, testimonials and highlights. Each one disappears as soon as the matching field in `content.js` is filled in. Before launch, set `showPlaceholders: false` so that any item still empty is hidden rather than marked.
+
 ## How to update content
 
 All routine updates happen in `content.js`:
@@ -33,10 +41,8 @@ These two images replace the placeholders automatically once the files exist:
 
 ## Before launch: open items
 
-1. **Booking form delivery.** Create a free [Formspree](https://formspree.io) form that sends to Denis's inbox, then paste its endpoint into `formEndpoint`. Until that is set:
-   - if `contact.email` is set, the form opens the visitor's email app pre-filled;
-   - if neither is set, the form runs in preview mode and tells the visitor nothing was sent.
-2. **Contact details and domain** (marked TBC in the brief). Set `contact.email` and `contact.phone`. Replace `deniskanaka.com` in `index.html` (canonical and `og:*` tags) with the real domain.
+1. **Booking form delivery.** The form works as soon as `contact.email` is set. Inquiries are then sent to that address through FormSubmit.co, and Denis must click a one-time activation email after the first inquiry. For spam filtering and a dashboard, paste a [Formspree](https://formspree.io) endpoint into `formEndpoint` instead. Until one of the two is set, the form refuses to submit and says so.
+2. **Contact details and domain** (marked TBC in the brief). Set `contact.email` and `contact.phone`. Replace `DOMAIN-GOES-HERE.com` in `index.html` (canonical and `og:*` tags) with the real domain.
 3. **Streaming links.** Add Spotify, Apple Music and YouTube URLs to `contact` and to each release.
 4. **Studio links.** Add the URLs for Jisho Visuals and Gorilla Peach in `projects`.
 5. **Analytics.** Paste a Plausible or GA4 snippet into the `<head>`. `main.js` already sends these events:
