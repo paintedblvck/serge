@@ -14,6 +14,16 @@
   /* Visible "… goes here" marker (or nothing when placeholders are off). */
   function todo(text, cls) { return TODO ? '<span class="todo' + (cls ? " " + cls : "") + '">' + esc(text) + "</span>" : ""; }
 
+  /* Round icon button for a platform link. Missing link → dashed "… goes here" button. */
+  var ICON = window.ICONS || {};
+  function iconBtn(key, url, name, trackName, trackLabel) {
+    var svg = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="' + (ICON[key] || "") + '"/></svg>';
+    if (url) return '<a class="icon-btn" href="' + esc(url) + '" target="_blank" rel="noopener" aria-label="' + esc(name) + '" title="' + esc(name) + '" data-track="' + trackName + '" data-track-label="' + esc(trackLabel) + '">' + svg + "</a>";
+    if (!TODO) return "";
+    var t = name + " link goes here";
+    return '<span class="icon-btn is-todo" role="img" aria-label="' + esc(t) + '" title="' + esc(t) + '">' + svg + "</span>";
+  }
+
   /* ---------- Analytics hook ----------------------------------------
      Works with Plausible, GA4 (gtag) or Google Tag Manager if present. */
   function track(name, label) {
@@ -88,10 +98,7 @@
     if (!TODO && !m.title) return;
     var keys = Object.keys(m.links || {});
     var links = keys.map(function (k) {
-      var name = LINK_NAMES[k] || k;
-      return m.links[k]
-        ? '<a class="chip" href="' + esc(m.links[k]) + '" target="_blank" rel="noopener" data-track="music_click" data-track-label="' + esc((m.title || "release") + " / " + k) + '">' + esc(name) + "</a>"
-        : todo(name + " link goes here", "chip");
+      return iconBtn(k, m.links[k], LINK_NAMES[k] || k, "music_click", (m.title || "release") + " / " + k);
     }).join("");
     var label = (m.type || "Release").toLowerCase();
     var title = m.title ? esc(m.title) : (TODO ? '<span class="todo">' + esc(m.type || "Release") + " title goes here</span>" : "");
@@ -102,19 +109,21 @@
         (m.cover ? ' style="background-image:url(\'' + esc(m.cover) + '\')" role="img" aria-label="' + esc(m.title) + ' cover art"' : ' aria-hidden="true"') +
         '><span class="cover-mark">kanaka</span>' + (!m.cover && TODO ? '<span class="cover-todo">Cover art goes here</span>' : "") + "</div>" +
       '<div class="release-meta"><h3 class="release-title">' + title + '</h3><span class="release-type">' + esc(m.type) + (m.year ? " · " + esc(m.year) : (TODO ? " · year" : "")) + "</span></div>" +
-      '<div class="release-links">' + links + "</div>";
+      '<div class="release-links icon-row">' + links + "</div>";
     rel.appendChild(art);
   });
 
   /* Artist-level streaming / social links */
   var socials = [
-    ["Instagram", C.instagram ? "https://www.instagram.com/" + C.instagram + "/" : ""],
-    ["Spotify", C.spotify], ["Apple Music", C.appleMusic], ["SoundCloud", C.soundcloud], ["YouTube", C.youtube]
+    ["Instagram", C.instagram ? "https://www.instagram.com/" + C.instagram + "/" : "", "instagram"],
+    ["Spotify", C.spotify, "spotify"], ["Apple Music", C.appleMusic, "apple"], ["SoundCloud", C.soundcloud, "soundcloud"], ["YouTube", C.youtube, "youtube"]
   ];
-  $("#streamLinks").innerHTML = socials.filter(function (s) { return s[0] !== "Instagram"; }).map(function (s) {
-    return s[1]
-      ? '<a class="chip" href="' + esc(s[1]) + '" target="_blank" rel="noopener" data-track="music_click" data-track-label="artist-' + esc(s[0]) + '">' + esc(s[0]) + " ↗</a>"
-      : todo(s[0] + " profile link goes here", "chip");
+  var streamHtml = socials.filter(function (s) { return s[0] !== "Instagram"; }).map(function (s) {
+    return iconBtn(s[2], s[1], s[0] + " profile", "music_click", "artist-" + s[0]);
+  }).join("");
+  $("#streamLinks").innerHTML = streamHtml ? '<span class="icon-row-label">Listen on</span>' + streamHtml : "";
+  $("#aboutSocial").innerHTML = socials.map(function (s) {
+    return iconBtn(s[2], s[1], s[0], "social_click", "about-" + s[0]);
   }).join("");
   $("#footerLinks").innerHTML = socials.filter(function (s) { return s[1]; }).map(function (s) {
     return '<a href="' + esc(s[1]) + '" target="_blank" rel="noopener" data-track="social_click" data-track-label="footer-' + esc(s[0]) + '">' + esc(s[0]) + "</a>";
@@ -122,22 +131,18 @@
 
   /* ---------- Projects ---------- */
   $("#projects").innerHTML = (S.projects || []).map(function (p) {
-    var tag = p.url ? "a" : "div";
-    var attrs = p.url ? ' href="' + esc(p.url) + '" target="_blank" rel="noopener" data-track="project_click" data-track-label="' + esc(p.title) + '"' : "";
-    return "<" + tag + ' class="project reveal"' + attrs + '>' +
-      '<p class="label">' + esc(p.tag) + "</p><h3>" + esc(p.title) + "</h3><p>" + esc(p.text) + "</p>" +
-      (p.url ? '<span class="go">Visit ↗</span>' : todo(p.title + " link goes here")) + "</" + tag + ">";
+    var btn = p.url
+      ? '<a class="btn project-btn" href="' + esc(p.url) + '" target="_blank" rel="noopener" data-track="project_click" data-track-label="' + esc(p.title) + '">Take a look <span aria-hidden="true">↗</span></a>'
+      : TODO
+        ? '<span class="btn project-btn is-todo" role="link" aria-disabled="true" title="' + esc(p.title) + ' link goes here">Take a look <span aria-hidden="true">↗</span></span>'
+        : "";
+    return '<div class="project reveal"><p class="label">' + esc(p.tag) + "</p><h3>" + esc(p.title) + "</h3><p>" + esc(p.text) + "</p>" + btn + "</div>";
   }).join("");
 
   /* ---------- Highlights ---------- */
   var hl = $("#highlights"), H = S.highlights || [];
-  if (H.length) {
-    hl.innerHTML = H.map(function (h) { return "<li>" + esc(h) + "</li>"; }).join("");
-  } else if (TODO) {
-    hl.innerHTML = [1, 2, 3].map(function (n) { return '<li class="todo-li">' + todo("Career highlight " + n + " goes here") + "</li>"; }).join("");
-  } else {
-    hl.hidden = true;
-  }
+  if (H.length) hl.innerHTML = H.map(function (h) { return "<li>" + esc(h) + "</li>"; }).join("");
+  else hl.hidden = true;
 
   /* ---------- Testimonials ---------- */
   var T = S.testimonials || [];

@@ -445,3 +445,37 @@ a.project:hover { transform: translateY(-4px); box-shadow: 0 18px 40px -20px rgb
 :root[data-theme="light"] .form, :root[data-theme="light"] .form-done { background: #FBF6EC; }
 :root[data-theme="light"] .btn-ghost { border-color: rgba(23, 23, 19, .4); }
 :root[data-theme="light"] .btn-ghost:hover { border-color: #171713; background: rgba(23, 23, 19, .05); }
+
+
+/* =====================================================================
+   ICON BUTTONS (platform links) + "Take a look" project buttons
+   ===================================================================== */
+.icon-row { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+.icon-row-label { font: 500 12px var(--mono); letter-spacing: .12em; text-transform: uppercase; margin-right: 6px; color: rgba(23, 23, 19, .72); }
+.icon-btn {
+  width: 46px; height: 46px; border-radius: 50%; display: inline-grid; place-items: center; flex: none;
+  border: 1px solid; text-decoration: none; transition: background .2s, color .2s, border-color .2s, transform .2s;
+}
+.icon-btn svg { width: 19px; height: 19px; fill: currentColor; }
+a.icon-btn:hover { transform: translateY(-2px); }
+.icon-btn.is-todo { border-style: dashed; opacity: .55; cursor: help; }
+.section-paper .icon-btn { color: #171713; border-color: rgba(23, 23, 19, .28); }
+.section-paper a.icon-btn:hover { background: #171713; color: #F1E8D6; border-color: #171713; }
+.section-ink .icon-btn { color: var(--paper); border-color: var(--ink-line); }
+.section-ink a.icon-btn:hover { background: var(--paper); color: var(--ink); border-color: var(--paper); }
+.section-ink .icon-btn.is-todo { border-color: var(--paper-muted); }
+#aboutSocial { margin-top: 28px; }
+.release-links { gap: 8px; }
+.release-links .icon-btn { width: 42px; height: 42px; }
+.release-links .icon-btn svg { width: 17px; height: 17px; }
+
+.project-btn {
+  margin-top: auto; align-self: flex-start; min-height: 44px; padding: 0 20px; font-size: 14px;
+  border-color: rgba(23, 23, 19, .35); color: #171713; background: transparent;
+}
+.project-btn:hover { background: #171713; color: #F1E8D6; border-color: #171713; }
+.project:nth-child(2) .project-btn { border-color: rgba(241, 232, 214, .4); color: #F1E8D6; }
+.project:nth-child(2) .project-btn:hover { background: #F1E8D6; color: #171713; }
+.project-btn.is-todo { border-style: dashed; opacity: .6; cursor: help; }
+.project-btn.is-todo:hover { background: transparent; color: #171713; }
+.project:nth-child(2) .project-btn.is-todo:hover { color: #F1E8D6; }
